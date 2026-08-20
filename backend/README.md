@@ -5,6 +5,24 @@ FastAPI backend service for the CatalogGuard platform.
 ## Requirements
 
 - Python 3.10+
+- PostgreSQL 14+
+
+## Database
+
+CatalogGuard uses PostgreSQL as its database store, with SQLAlchemy 2.0 ORM for database operations and Alembic for schema migrations.
+
+## Environment Configuration
+
+Copy `.env.example` to `.env` and set your configuration variables:
+
+```bash
+cp .env.example .env
+```
+
+Key environment variables:
+- `APP_NAME`: Name of the application (default: `CatalogGuard API`)
+- `ENVIRONMENT`: Runtime environment (`development`, `production`, etc.)
+- `DATABASE_URL`: PostgreSQL connection string (format: `postgresql+psycopg://username:password@localhost:5432/catalogguard`)
 
 ## Setup
 
@@ -26,6 +44,11 @@ FastAPI backend service for the CatalogGuard platform.
 3. Install requirements:
    ```bash
    pip install -r requirements.txt
+   ```
+
+4. Run Database Migrations:
+   ```bash
+   alembic upgrade head
    ```
 
 ## Running the Server
