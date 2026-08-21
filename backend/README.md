@@ -59,6 +59,46 @@ Start the FastAPI development server from the `backend` directory:
 uvicorn app.main:app --reload
 ```
 
+## Catalog Upload & Ingestion
+
+CatalogGuard supports ingesting product catalogs from CSV and Excel spreadsheets.
+
+### Supported File Types
+- CSV (`.csv`)
+- Excel (`.xlsx`)
+
+### Expected Catalog Columns
+- **Required**: `sku`, `name`, `category`, `price`, `inventory`
+- **Optional**: `description`, `brand`, `currency` (defaults to `"INR"`), `image_url`
+
+### API Endpoints
+
+#### Upload Catalog
+- **Endpoint**: `POST /api/v1/catalogs/upload`
+- **Content-Type**: `multipart/form-data`
+- **Example Request**:
+  ```bash
+  curl -X POST "http://127.0.0.1:8000/api/v1/catalogs/upload" \
+    -F "file=@products.csv"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "message": "Catalog uploaded successfully",
+    "upload_id": 1,
+    "filename": "products.csv",
+    "total_products": 25,
+    "status": "processed"
+  }
+  ```
+
+#### Catalog Upload History
+- **Endpoint**: `GET /api/v1/catalogs`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/catalogs"
+  ```
+
 ## Health Check
 
 Verify the service is running:
