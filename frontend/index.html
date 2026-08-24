@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CatalogGuard catalog ingestion workspace">
+  <title>CatalogGuard | Ingestion workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#top" aria-label="CatalogGuard home">
+        <span class="brand-mark"><i data-lucide="shield-check"></i></span>
+        <span>Catalog<span>Guard</span></span>
+      </a>
+      <div class="workspace-label">Workspace</div>
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="nav-link active" href="#overview"><i data-lucide="layout-dashboard"></i><span>Overview</span></a>
+        <a class="nav-link" href="#uploads"><i data-lucide="folder-up"></i><span>Catalog uploads</span><b id="nav-count">0</b></a>
+        <a class="nav-link" href="#rules"><i data-lucide="list-checks"></i><span>Validation rules</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="service-card">
+          <span class="status-dot" id="service-dot"></span>
+          <div><strong>API service</strong><small id="service-status">Checking connection</small></div>
+          <button class="icon-button" id="refresh-service" title="Check API connection" aria-label="Check API connection"><i data-lucide="refresh-cw"></i></button>
+        </div>
+        <div class="user-chip"><span class="avatar">RZ</span><div><strong>Rushikesh Zope</strong><small>Administrator</small></div><i data-lucide="more-horizontal"></i></div>
+      </div>
+    </aside>
+
+    <main class="main" id="top">
+      <header class="topbar">
+        <div><p class="eyebrow">Operations / Catalog quality</p><h1>Good morning, Rushikesh <span aria-hidden="true">.</span></h1></div>
+        <div class="topbar-actions"><span class="date-pill"><i data-lucide="calendar-days"></i><span id="today"></span></span><button class="help-button" title="Open API documentation"><i data-lucide="circle-help"></i><span>Help</span></button></div>
+      </header>
+
+      <section class="hero" id="overview">
+        <div class="hero-copy"><div class="hero-kicker"><span class="pulse"></span> Catalog intake is ready</div><h2>Keep every product<br><em>publication-ready.</em></h2><p>Ingest a clean CSV or Excel catalog, then keep a living record of everything entering your marketplace.</p><button class="primary-button" id="hero-upload"><i data-lucide="upload-cloud"></i>Upload a catalog</button></div>
+        <div class="hero-graphic" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="graphic-core"><i data-lucide="shield-check"></i><span>READY</span></div><span class="float-tag tag-one">CSV</span><span class="float-tag tag-two">XLSX</span><span class="float-tag tag-three">01</span></div>
+      </section>
+
+      <section class="metrics" aria-label="Catalog metrics">
+        <article class="metric-card accent"><div class="metric-top"><span>Catalog health</span><i data-lucide="activity"></i></div><strong id="health-score">100<span>%</span></strong><small>Validation endpoint pending</small><div class="meter"><span id="health-meter"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Total products ingested</span><i data-lucide="package-check"></i></div><strong id="product-count">0</strong><small>Across all processed uploads</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Processed catalogs</span><i data-lucide="files"></i></div><strong id="upload-count">0</strong><small>Successful ingestion events</small></article>
+        <article class="metric-card"><div class="metric-top"><span>Supported formats</span><i data-lucide="file-spreadsheet"></i></div><strong>2</strong><small>CSV and XLSX accepted</small></article>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel upload-panel" id="upload-panel">
+          <div class="panel-heading"><div><p class="eyebrow">New intake</p><h3>Upload catalog</h3></div><span class="step-label">01 / 01</span></div>
+          <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Choose a CSV or XLSX catalog">
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden>
+            <div class="upload-icon"><i data-lucide="file-up"></i></div><h4>Drop your catalog here</h4><p>or <u>browse from your computer</u></p><small>CSV or XLSX · max file size depends on API configuration</small>
+          </div>
+          <div class="file-preview hidden" id="file-preview"><span class="file-type"><i data-lucide="file-spreadsheet"></i></span><div><strong id="file-name"></strong><small id="file-size"></small></div><button class="icon-button" id="clear-file" title="Remove selected file" aria-label="Remove selected file"><i data-lucide="x"></i></button></div>
+          <button class="submit-button" id="submit-upload" disabled><i data-lucide="arrow-up-right"></i>Process catalog</button>
+          <p class="form-message" id="form-message" role="status"></p>
+        </section>
+
+        <section class="panel guide-panel" id="rules">
+          <div class="panel-heading"><div><p class="eyebrow">Before you send</p><h3>Catalog checklist</h3></div><i class="heading-icon" data-lucide="clipboard-check"></i></div>
+          <div class="checklist"><div><i data-lucide="check"></i><span><strong>Required columns</strong><small>sku, name, category, price, inventory</small></span></div><div><i data-lucide="check"></i><span><strong>Optional enrichment</strong><small>description, brand, currency, image_url</small></span></div><div><i data-lucide="check"></i><span><strong>Default currency</strong><small>Missing currency is set to INR</small></span></div></div>
+          <div class="rule-note"><i data-lucide="info"></i><span>Uploads are parsed and stored atomically. A failed file leaves no partial catalog behind.</span></div>
+        </section>
+      </div>
+
+      <section class="panel history-panel" id="uploads">
+        <div class="panel-heading history-heading"><div><p class="eyebrow">Audit trail</p><h3>Recent uploads</h3></div><button class="text-button" id="refresh-history"><i data-lucide="refresh-cw"></i>Refresh</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Catalog</th><th>Format</th><th>Products</th><th>Status</th><th>Uploaded</th></tr></thead><tbody id="history-body"><tr><td colspan="5" class="empty-state"><i data-lucide="inbox"></i><strong>No catalogs yet</strong><span>Your processed uploads will appear here.</span></td></tr></tbody></table></div>
+      </section>
+      <footer><span>CatalogGuard <b>·</b> Validate. Standardize. Publish.</span><span class="mono">API v0.1.0</span></footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
