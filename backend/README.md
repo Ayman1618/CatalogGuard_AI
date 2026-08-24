@@ -131,6 +131,60 @@ $$\text{Score} = 100 - \left(\frac{\text{Invalid Products}}{\text{Total Products
 - Clamped between 0 and 100, rounded to the nearest whole number.
 - An empty catalog returns 100.
 
+### Validation API Endpoints
+
+#### Validate Catalog Upload
+Runs the deterministic validation engine over all products belonging to a specific catalog upload, creates a persistent `ValidationRun` record, and returns structured results.
+
+- **Endpoint**: `POST /api/v1/catalogs/{upload_id}/validate`
+- **Example Request**:
+  ```bash
+  curl -X POST "http://127.0.0.1:8000/api/v1/catalogs/1/validate"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "upload_id": 1,
+    "total_products": 100,
+    "valid_products": 70,
+    "warning_products": 20,
+    "invalid_products": 10,
+    "total_errors": 15,
+    "total_warnings": 25,
+    "health_score": 87,
+    "results": [
+      {
+        "product_id": 101,
+        "sku": "SKU101",
+        "status": "valid",
+        "issues": []
+      },
+      {
+        "product_id": 102,
+        "sku": "SKU102",
+        "status": "invalid",
+        "issues": [
+          {
+            "code": "INVALID_PRICE",
+            "field": "price",
+            "severity": "error",
+            "message": "Price must be greater than 0."
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+#### Retrieve Validation Result
+Retrieves the most recent validation result for a catalog upload without re-running validation.
+
+- **Endpoint**: `GET /api/v1/catalogs/{upload_id}/validation`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/catalogs/1/validation"
+  ```
+
 ## Health Check
 
 Verify the service is running:
@@ -144,4 +198,3 @@ Verify the service is running:
   ```
 
 FastAPI automatic interactive documentation (Swagger UI) is available at `/docs`.
-

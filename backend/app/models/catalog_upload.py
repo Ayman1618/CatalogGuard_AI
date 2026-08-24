@@ -7,6 +7,7 @@ from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.product import Product
+    from app.models.validation_run import ValidationRun
 
 
 class CatalogUpload(Base):
@@ -29,4 +30,7 @@ class CatalogUpload(Base):
 
     products: Mapped[List["Product"]] = relationship(
         "Product", back_populates="catalog_upload", cascade="all, delete-orphan"
+    )
+    validation_runs: Mapped[List["ValidationRun"]] = relationship(
+        "ValidationRun", back_populates="catalog_upload", cascade="all, delete-orphan"
     )
