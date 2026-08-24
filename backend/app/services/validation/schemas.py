@@ -66,3 +66,9 @@ class CatalogValidationResult(BaseModel):
     total_warnings: int
     health_score: int
     results: List[ProductValidationResult] = Field(default_factory=list)
+
+
+class CatalogValidationResponse(CatalogValidationResult):
+    """API response model for catalog validation, including the target upload_id."""
+
+    upload_id: int

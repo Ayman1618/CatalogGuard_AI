@@ -6,6 +6,13 @@ from app.core.database import get_db
 from app.models.catalog_upload import CatalogUpload
 from app.models.product import Product
 from app.services.catalog_parser import CatalogParseError, parse_catalog_file
+from app.services.validation.schemas import CatalogValidationResponse
+from app.services.validation_service import (
+    CatalogUploadNotFoundError,
+    ValidationResultNotFoundError,
+    get_latest_validation_by_upload_id,
+    validate_catalog_by_upload_id,
+)
 
 router = APIRouter()
 
@@ -118,3 +125,62 @@ def get_catalog_uploads(db: Session = Depends(get_db)):
         }
         for u in uploads
     ]
+
+
+@router.post(
+    "/{upload_id}/validate",
+    response_model=CatalogValidationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Validate all products in a catalog upload.",
+)
+def validate_catalog_upload(
+    upload_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Validate all products belonging to a specific catalog upload using the deterministic validation engine.
+    """
+    try:
+        return validate_catalog_by_upload_id(db, upload_id)
+    except CatalogUploadNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error during catalog validation: {str(e)}",
+        )
+
+
+@router.get(
+    "/{upload_id}/validation",
+    response_model=CatalogValidationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve the latest validation result for a catalog upload.",
+)
+def get_catalog_validation_result(
+    upload_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieve the most recent validation result for a catalog upload.
+    """
+    try:
+        return get_latest_validation_by_upload_id(db, upload_id)
+    except CatalogUploadNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except ValidationResultNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error retrieving validation result: {str(e)}",
+        )
