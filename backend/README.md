@@ -99,6 +99,38 @@ CatalogGuard supports ingesting product catalogs from CSV and Excel spreadsheets
   curl -X GET "http://127.0.0.1:8000/api/v1/catalogs"
   ```
 
+## Catalog Validation
+
+CatalogGuard features a deterministic, rule-based catalog validation engine located in `app/services/validation/`. The engine checks individual product records and full catalogs to catch structural and data quality issues prior to publication.
+
+### Supported Validation Rules
+
+| Rule Code | Target Field | Severity | Description |
+|-----------|--------------|----------|-------------|
+| `MISSING_REQUIRED_FIELD` | `sku`, `name`, `category`, `price`, `inventory` | Error | Required field is missing or empty |
+| `INVALID_PRICE` | `price` | Error | Price must be a valid number greater than 0 |
+| `NEGATIVE_INVENTORY` | `inventory` | Error | Inventory cannot be negative (must be >= 0) |
+| `MISSING_IMAGE_URL` | `image_url` | Warning | Product image URL is missing |
+| `MISSING_BRAND` | `brand` | Warning | Product brand is missing |
+| `INVALID_CURRENCY` | `currency` | Error | Currency must be one of `INR`, `USD`, `EUR`, `GBP` |
+| `DUPLICATE_SKU` | `sku` | Error | Duplicate SKU detected across the catalog (flags all occurrences) |
+| `DUPLICATE_PRODUCT_NAME` | `name` | Warning | Duplicate product name detected via normalized exact matching |
+
+### Product Status
+
+- **Valid**: No errors or warnings detected.
+- **Warning**: Only non-blocking quality issues detected (no blocking errors).
+- **Invalid**: At least one blocking validation error detected.
+
+### Catalog Health Score
+
+The catalog health score is a deterministic quality metric from 0 to 100:
+
+$$\text{Score} = 100 - \left(\frac{\text{Invalid Products}}{\text{Total Products}} \times 70\right) - \left(\frac{\text{Warning Products}}{\text{Total Products}} \times 30\right)$$
+
+- Clamped between 0 and 100, rounded to the nearest whole number.
+- An empty catalog returns 100.
+
 ## Health Check
 
 Verify the service is running:
@@ -112,3 +144,4 @@ Verify the service is running:
   ```
 
 FastAPI automatic interactive documentation (Swagger UI) is available at `/docs`.
+
