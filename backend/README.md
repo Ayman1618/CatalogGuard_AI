@@ -185,6 +185,59 @@ Retrieves the most recent validation result for a catalog upload without re-runn
   curl -X GET "http://127.0.0.1:8000/api/v1/catalogs/1/validation"
   ```
 
+## Review Workflow
+
+CatalogGuard includes a human-in-the-loop backend review workflow that allows operations users to inspect products with validation issues and manually approve or reject them.
+
+### Workflow & Principles
+
+1. **Queue Inclusion**: Products with automated validation statuses of `invalid` or `warning` enter the review queue.
+2. **Human Inspection**: Operations users inspect detailed product attributes and validation issues.
+3. **Decisions**: Products can be marked as `approved` or `rejected`. Decisions can be changed if needed (`pending` -> `approved`/`rejected`, `approved` <-> `rejected`).
+4. **Validation Independence**: `review_status` (`pending`, `approved`, `rejected`) is strictly independent of `validation_status` (`valid`, `warning`, `invalid`). For example, an `invalid` product can be human-approved if verified externally, and automated validation status remains unmodified.
+
+### Review API Endpoints
+
+#### Review Queue
+Retrieves products requiring operations review (`invalid` or `warning` status).
+- **Endpoint**: `GET /api/v1/reviews`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/reviews"
+  ```
+
+#### Product Review Details
+Retrieves detailed product info, validation status, review status, issues, and latest validation run metadata.
+- **Endpoint**: `GET /api/v1/reviews/{product_id}`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/reviews/12"
+  ```
+
+#### Approve Product
+Sets product `review_status` to `approved`.
+- **Endpoint**: `POST /api/v1/reviews/{product_id}/approve`
+- **Example Request**:
+  ```bash
+  curl -X POST "http://127.0.0.1:8000/api/v1/reviews/12/approve"
+  ```
+
+#### Reject Product
+Sets product `review_status` to `rejected`.
+- **Endpoint**: `POST /api/v1/reviews/{product_id}/reject`
+- **Example Request**:
+  ```bash
+  curl -X POST "http://127.0.0.1:8000/api/v1/reviews/12/reject"
+  ```
+
+#### Review Status Summary
+Retrieves current validation status and review status summary.
+- **Endpoint**: `GET /api/v1/reviews/{product_id}/status`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/reviews/12/status"
+  ```
+
 ## Health Check
 
 Verify the service is running:

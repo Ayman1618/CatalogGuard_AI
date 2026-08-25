@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.catalogs import router as catalogs_router
+from app.api.v1.reviews import router as reviews_router
 
 app = FastAPI(
     title="CatalogGuard API",
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(catalogs_router, prefix="/api/v1/catalogs", tags=["Catalogs"])
+app.include_router(reviews_router, prefix="/api/v1/reviews", tags=["Reviews"])
 
 
 @app.get("/health")
