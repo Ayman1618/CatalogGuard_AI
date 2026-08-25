@@ -2,164 +2,111 @@
 
 > **Validate. Standardize. Publish.**
 
-CatalogGuard is an AI-assisted product catalog validation platform built for multi-vendor marketplaces. It helps marketplace administrators detect and resolve catalog inconsistencies before products go live, reducing customer-facing errors and improving overall catalog quality.
+CatalogGuard is a product catalog quality and validation platform built for multi-vendor marketplaces. It helps marketplace administrators detect, validate, and resolve catalog inconsistencies before products go live, reducing customer-facing errors and improving overall catalog quality.
 
 ---
 
 ## 🚀 Features
 
-- 📤 Upload product catalogs via CSV or Excel
-- ✅ Rule-based validation for common catalog errors
-- 🤖 AI-powered correction suggestions for ambiguous records
-- 📊 Dashboard with catalog health insights and validation metrics
-- 👨💼 Admin review workflow for approving or rejecting AI suggestions
-- 📄 Export validated product catalogs as CSV
-
----
-
-## 📸 Screenshots
-
-> Add screenshots here once the UI is complete.
-
-| Dashboard | Validation Results |
-|-----------|--------------------|
-| *(Coming Soon)* | *(Coming Soon)* |
+- 📤 **Catalog Upload & Ingestion**: Upload product catalogs via CSV or Excel (`.xlsx`).
+- ✅ **Deterministic Rule Validation**: Automated checks for missing fields, invalid prices, negative inventory, duplicate SKUs, invalid currency, and missing brand/image assets.
+- 📊 **Operations Dashboard**: Real-time KPI metrics, catalog health scores, and recent ingestion history.
+- 👨‍💼 **Review Queue**: Human-in-the-loop inspection and decision triage for products requiring manual operations review.
+- ✔️ **Approve / Reject Workflow**: Independent human operational decision-making with instant status synchronization.
 
 ---
 
 ## 🏗️ Tech Stack
 
 ### Frontend
-- Next.js
+- Next.js (App Router)
+- TypeScript
 - Tailwind CSS
-- shadcn/ui
+- Lucide React
 
 ### Backend
 - FastAPI
-
-### Database
+- SQLAlchemy 2.0 ORM & Alembic
 - PostgreSQL
-- SQLAlchemy
-
-### AI
-- Gemini Flash API
-
-### File Processing
-- Pandas
-
-### Authentication
-- JWT
-
-### Deployment
-- Vercel (Frontend)
-- Render (Backend)
+- Pandas & openpyxl
 
 ---
 
 ## 📂 Project Structure
 
 ```
-catalogguard/
-│
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   └── public/
-│
+CatalogGuard_AI/
 ├── backend/
 │   ├── app/
-│   ├── api/
-│   ├── models/
-│   ├── services/
-│   ├── validators/
-│   └── utils/
+│   │   ├── api/v1/          # Endpoints (catalogs, reviews)
+│   │   ├── core/            # Database configuration
+│   │   ├── models/          # SQLAlchemy ORM models
+│   │   └── services/        # Parsers, validation engine, review service
+│   ├── alembic/             # Schema migrations
+│   └── tests/               # Pytest suite
 │
-├── uploads/
-├── docs/
+├── frontend/
+│   ├── app/                 # Next.js App Router (/, /uploads, /reviews, /reviews/[productId])
+│   ├── components/          # Dashboard, Uploads, Reviews, Layout, UI
+│   ├── lib/                 # Centralized API client & utilities
+│   └── types/               # TypeScript interfaces
+│
 └── README.md
 ```
 
 ---
 
-## ⚙️ How It Works
+## ⚙️ Local Development Setup
 
-1. Seller uploads a CSV or Excel catalog.
-2. The system performs rule-based validation.
-3. Products with issues are flagged.
-4. AI generates suggestions for applicable records.
-5. An administrator reviews the suggestions.
-6. Approved products are published.
-7. The cleaned catalog can be exported.
+### 1. Backend Setup
 
----
+```bash
+# Navigate to backend
+cd backend
 
-## 📋 Validation Checks
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+# or .venv\Scripts\activate # Windows
 
-CatalogGuard validates:
+# Install dependencies
+pip install -r requirements.txt
 
-- Missing mandatory fields
-- Invalid product prices
-- Negative inventory
-- Duplicate SKUs
-- Duplicate product names
-- Missing image URLs
-- Invalid categories
-- Incorrect data formats
+# Configure environment variables
+cp .env.example .env
 
----
+# Run database migrations
+alembic upgrade head
 
-## 🤖 AI Assistance
+# Start FastAPI server
+uvicorn app.main:app --reload --port 8000
+```
 
-AI is used selectively for cases where rule-based validation is insufficient.
+The backend API will run on `http://localhost:8000`. Interactive API documentation is available at `http://localhost:8000/docs`.
 
-Examples include:
+### 2. Frontend Setup
 
-- Product title standardization
-- Category recommendations
-- Spelling corrections
-- Formatting improvements
+```bash
+# Navigate to frontend
+cd frontend
 
-AI suggestions are always reviewed by an administrator before approval.
+# Install dependencies
+npm install
 
----
+# Configure environment variables
+cp .env.example .env.local
 
-## 📊 Dashboard Metrics
+# Run Next.js development server
+npm run dev
+```
 
-- Total Products Uploaded
-- Validation Success Rate
-- Invalid Products
-- Duplicate Products
-- Pending Reviews
-- Catalog Health Score
-- Average Processing Time
-
----
-
-## 🎯 Project Goals
-
-- Improve catalog quality
-- Reduce manual validation effort
-- Prevent invalid products from going live
-- Improve customer trust
-- Streamline marketplace operations
-
----
-
-## 🔮 Future Enhancements
-
-- Seller API integration
-- Image validation
-- Bulk approval workflow
-- Multi-language support
-- Price anomaly detection
-- Real-time inventory synchronization
+The frontend application will be accessible at `http://localhost:3000`.
 
 ---
 
 ## 👥 Team
 
-- **Ayman Velani** – Backend Development & AI Integration
+- **Ayman Velani** – Backend Development
 - **Rushikesh Zope** – Frontend Development & UI/UX
 - **Yash Bodhe** – Database, Testing & Documentation
 
@@ -167,4 +114,4 @@ AI suggestions are always reviewed by an administrator before approval.
 
 ## 📄 License
 
-This project is developed for educational purposes as part of a college software engineering project.
+This project is developed for educational purposes as part of a software engineering project.
