@@ -4,7 +4,9 @@ const dropZone = document.querySelector('#drop-zone');
 const filePreview = document.querySelector('#file-preview');
 const submitButton = document.querySelector('#submit-upload');
 const formMessage = document.querySelector('#form-message');
+const historySearch = document.querySelector('#history-search');
 let selectedFile = null;
+let uploadHistory = [];
 
 lucide.createIcons();
 document.querySelector('#today').textContent = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date());
@@ -20,6 +22,7 @@ document.querySelector('#clear-file').addEventListener('click', clearFile);
 submitButton.addEventListener('click', uploadFile);
 document.querySelector('#refresh-history').addEventListener('click', loadHistory);
 document.querySelector('#refresh-service').addEventListener('click', checkService);
+historySearch.addEventListener('input', renderHistory);
 
 function setFile(file) {
   if (!file) return;
@@ -60,16 +63,24 @@ async function loadHistory() {
   try {
     const response = await fetch(`${API_BASE}/api/v1/catalogs`);
     if (!response.ok) throw new Error('History unavailable');
-    const uploads = await response.json();
-    body.innerHTML = uploads.length ? uploads.map((upload) => `<tr><td>${escapeHtml(upload.filename)}</td><td><span class="format">${escapeHtml(upload.file_type)}</span></td><td>${upload.total_products}</td><td><span class="status">${escapeHtml(upload.status)}</span></td><td>${formatDate(upload.created_at)}</td></tr>`).join('') : emptyHistory();
-    const total = uploads.reduce((sum, upload) => sum + (upload.total_products || 0), 0);
-    document.querySelector('#upload-count').textContent = uploads.length;
-    document.querySelector('#product-count').textContent = total.toLocaleString();
-    document.querySelector('#nav-count').textContent = uploads.length;
-    lucide.createIcons();
+    uploadHistory = await response.json();
+    renderHistory();
   } catch (error) { body.innerHTML = `<tr><td colspan="5" class="empty-state"><i data-lucide="cloud-off"></i><strong>History is unavailable</strong><span>Start the API and refresh this view.</span></td></tr>`; lucide.createIcons(); }
 }
+
+function renderHistory() {
+  const body = document.querySelector('#history-body');
+  const query = historySearch.value.trim().toLowerCase();
+  const uploads = uploadHistory.filter((upload) => [upload.filename, upload.file_type, upload.status].some((value) => String(value || '').toLowerCase().includes(query)));
+  body.innerHTML = uploads.length ? uploads.map((upload) => `<tr><td>${escapeHtml(upload.filename)}</td><td><span class="format">${escapeHtml(upload.file_type)}</span></td><td>${upload.total_products}</td><td><span class="status">${escapeHtml(upload.status)}</span></td><td>${formatDate(upload.created_at)}</td></tr>`).join('') : query ? emptySearchHistory() : emptyHistory();
+  const total = uploadHistory.reduce((sum, upload) => sum + (upload.total_products || 0), 0);
+  document.querySelector('#upload-count').textContent = uploadHistory.length;
+    document.querySelector('#product-count').textContent = total.toLocaleString();
+  document.querySelector('#nav-count').textContent = uploadHistory.length;
+  lucide.createIcons();
+}
 function emptyHistory() { return '<tr><td colspan="5" class="empty-state"><i data-lucide="inbox"></i><strong>No catalogs yet</strong><span>Your processed uploads will appear here.</span></td></tr>'; }
+function emptySearchHistory() { return '<tr><td colspan="5" class="empty-state"><i data-lucide="search-x"></i><strong>No matching uploads</strong><span>Try a different filename, format, or status.</span></td></tr>'; }
 function formatDate(value) { if (!value) return '—'; return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value)); }
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
 
