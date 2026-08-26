@@ -90,3 +90,9 @@ export interface ProductReviewStatusResponse {
   validation_status: ValidationStatus;
   review_status: ReviewStatus;
 }
+
+export interface AISuggestion {
+  explanation: string;
+  suggestion: string;
+  confidence: "low" | "medium" | "high";
+}

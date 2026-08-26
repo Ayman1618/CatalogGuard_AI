@@ -2,9 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.services.ai.suggestion_service import (
+    AIServiceUnavailableError,
+    AISuggestion,
+)
 from app.services.review_service import (
     ProductNotFoundError,
+    ValidationIssueNotFoundError,
     approve_product,
+    get_ai_suggestion_for_issue,
     get_product_review_details,
     get_product_review_status,
     get_review_queue,
@@ -101,4 +107,36 @@ def get_product_review_status_endpoint(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
+        )
+
+
+@router.post(
+    "/{product_id}/issues/{issue_code}/suggestion",
+    response_model=AISuggestion,
+    status_code=status.HTTP_200_OK,
+    summary="Get AI validation suggestion for an issue",
+)
+def get_ai_validation_suggestion_endpoint(
+    product_id: int, issue_code: str, db: Session = Depends(get_db)
+):
+    """
+    Generate an AI-assisted explanation and suggested action for an existing validation issue on a product.
+    Does NOT modify the product or validation status.
+    """
+    try:
+        return get_ai_suggestion_for_issue(db, product_id, issue_code)
+    except ProductNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found.",
+        )
+    except ValidationIssueNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Validation issue not found.",
+        )
+    except AIServiceUnavailableError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI suggestion service is currently unavailable.",
         )

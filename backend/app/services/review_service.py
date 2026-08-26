@@ -3,11 +3,22 @@ from sqlalchemy.orm import Session
 
 from app.models.product import Product
 from app.models.validation_run import ValidationRun
+from app.services.ai.suggestion_service import (
+    AIServiceUnavailableError,
+    AISuggestion,
+    generate_validation_suggestion,
+)
 from app.services.validation.engine import validate_product
 
 
 class ProductNotFoundError(Exception):
     """Raised when a requested product ID does not exist."""
+
+    pass
+
+
+class ValidationIssueNotFoundError(Exception):
+    """Raised when the requested validation issue code is not found for a product."""
 
     pass
 
@@ -80,12 +91,26 @@ def get_review_queue(db: Session) -> List[Dict[str, Any]]:
             else:
                 # Fallback if validation hasn't been run for upload yet
                 single_res = validate_product(product)
-                val_status = single_res.status.value if hasattr(single_res.status, "value") else str(single_res.status)
-                issues = [i.model_dump(mode="json") if hasattr(i, "model_dump") else i for i in single_res.issues]
+                val_status = (
+                    single_res.status.value
+                    if hasattr(single_res.status, "value")
+                    else str(single_res.status)
+                )
+                issues = [
+                    i.model_dump(mode="json") if hasattr(i, "model_dump") else i
+                    for i in single_res.issues
+                ]
         else:
             single_res = validate_product(product)
-            val_status = single_res.status.value if hasattr(single_res.status, "value") else str(single_res.status)
-            issues = [i.model_dump(mode="json") if hasattr(i, "model_dump") else i for i in single_res.issues]
+            val_status = (
+                single_res.status.value
+                if hasattr(single_res.status, "value")
+                else str(single_res.status)
+            )
+            issues = [
+                i.model_dump(mode="json") if hasattr(i, "model_dump") else i
+                for i in single_res.issues
+            ]
 
         # Only include products with 'invalid' or 'warning' status in the review queue
         if val_status in ["invalid", "warning"]:
@@ -232,3 +257,25 @@ def get_product_review_status(db: Session, product_id: int) -> Dict[str, Any]:
         "validation_status": details["validation_status"],
         "review_status": details["review_status"],
     }
+
+
+def get_ai_suggestion_for_issue(
+    db: Session, product_id: int, issue_code: str
+) -> AISuggestion:
+    """
+    Retrieves product review details, finds the matching validation issue code,
+    and calls the AI service to generate a structured suggestion.
+    """
+    product_details = get_product_review_details(db, product_id)
+    issues = product_details.get("issues", [])
+
+    matching_issue = None
+    for issue in issues:
+        if issue.get("code") == issue_code:
+            matching_issue = issue
+            break
+
+    if not matching_issue:
+        raise ValidationIssueNotFoundError("Validation issue not found.")
+
+    return generate_validation_suggestion(product_details, matching_issue)
