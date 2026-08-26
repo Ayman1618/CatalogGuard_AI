@@ -249,7 +249,7 @@ export default function ProductReviewDetailPage({ params }: PageProps) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <IssuesList issues={details.issues || []} />
+              <IssuesList issues={details.issues || []} productId={details.product_id} />
             </CardContent>
           </Card>
         </div>

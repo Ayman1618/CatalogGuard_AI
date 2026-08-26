@@ -23,6 +23,7 @@ Key environment variables:
 - `APP_NAME`: Name of the application (default: `CatalogGuard API`)
 - `ENVIRONMENT`: Runtime environment (`development`, `production`, etc.)
 - `DATABASE_URL`: PostgreSQL connection string (format: `postgresql+psycopg://username:password@localhost:5432/catalogguard`)
+- `GEMINI_API_KEY`: Google Gemini API Key for AI-assisted validation suggestions (optional)
 
 ## Setup
 
@@ -236,6 +237,35 @@ Retrieves current validation status and review status summary.
 - **Example Request**:
   ```bash
   curl -X GET "http://127.0.0.1:8000/api/v1/reviews/12/status"
+  ```
+
+## AI-Assisted Validation Suggestions
+
+CatalogGuard includes a Google Gemini-powered AI assistant that provides plain-language explanations and recommended operational actions for existing deterministic validation issues.
+
+### Key AI Principles
+
+1. **Deterministic Authority**: The rule engine remains the sole source of truth for catalog validity. AI does NOT determine or override validation status.
+2. **Read-Only Assistance**: AI suggestions do NOT modify product attributes or automatically approve/reject products.
+3. **Optional Service**: Requires the `GEMINI_API_KEY` environment variable. If unconfigured or unavailable, the application operates normally with AI features gracefully returning HTTP 503.
+
+### AI Endpoint
+
+#### Get Issue AI Suggestion
+Generates a structured AI explanation, recommended reviewer action, and confidence score for a specific validation issue code on a product.
+
+- **Endpoint**: `POST /api/v1/reviews/{product_id}/issues/{issue_code}/suggestion`
+- **Example Request**:
+  ```bash
+  curl -X POST "http://127.0.0.1:8000/api/v1/reviews/12/issues/INVALID_PRICE/suggestion"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "explanation": "The product price is set to zero or a negative value, which is invalid for marketplace publication.",
+    "suggestion": "Check the source catalog spreadsheet and update the product with the intended positive selling price.",
+    "confidence": "high"
+  }
   ```
 
 ## Health Check

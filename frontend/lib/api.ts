@@ -1,4 +1,5 @@
 import {
+  AISuggestion,
   CatalogUpload,
   CatalogValidationResponse,
   ReviewDecisionResponse,
@@ -77,6 +78,8 @@ async function request<T>(
       errorDetail = errorDetail || "Requested resource not found.";
     } else if (response.status === 400) {
       errorDetail = errorDetail || "Unable to process request with provided data.";
+    } else if (response.status === 503) {
+      errorDetail = errorDetail || "AI suggestion service is currently unavailable.";
     } else if (response.status >= 500) {
       errorDetail =
         errorDetail || "Something went wrong on the server. Please try again.";
@@ -185,6 +188,21 @@ export async function rejectProduct(
 ): Promise<ReviewDecisionResponse> {
   return request<ReviewDecisionResponse>(
     `/api/v1/reviews/${productId}/reject`,
+    {
+      method: "POST",
+    }
+  );
+}
+
+/**
+ * Retrieve AI validation suggestion for a specific issue on a product
+ */
+export async function getAISuggestion(
+  productId: number,
+  issueCode: string
+): Promise<AISuggestion> {
+  return request<AISuggestion>(
+    `/api/v1/reviews/${productId}/issues/${encodeURIComponent(issueCode)}/suggestion`,
     {
       method: "POST",
     }
