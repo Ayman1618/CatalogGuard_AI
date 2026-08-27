@@ -268,6 +268,62 @@ Generates a structured AI explanation, recommended reviewer action, and confiden
   }
   ```
 
+## Catalog Analytics
+
+CatalogGuard provides basic analytics endpoints that aggregate historical database metrics and validation run results to power the operations dashboard.
+
+### Analytics Endpoints
+
+#### Analytics Summary
+Retrieves aggregate product counts, latest catalog health score, validation status breakdown (`valid`, `warning`, `invalid`), top validation issue occurrences, and review queue counts.
+
+- **Endpoint**: `GET /api/v1/analytics/summary`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/analytics/summary"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "total_catalogs": 10,
+    "total_products": 1250,
+    "latest_health_score": 87,
+    "latest_validation": {
+      "total_products": 100,
+      "valid_products": 70,
+      "warning_products": 20,
+      "invalid_products": 10,
+      "total_errors": 15,
+      "total_warnings": 25
+    },
+    "status_breakdown": {
+      "valid": 70,
+      "warning": 20,
+      "invalid": 10
+    },
+    "top_issues": [
+      {
+        "code": "MISSING_IMAGE_URL",
+        "count": 18
+      },
+      {
+        "code": "MISSING_BRAND",
+        "count": 12
+      }
+    ],
+    "products_requiring_review": 30
+  }
+  ```
+
+#### Health Score History
+Retrieves historical validation run health scores ordered chronologically to track catalog quality over time.
+
+- **Endpoint**: `GET /api/v1/analytics/health-history`
+- **Example Request**:
+  ```bash
+  curl -X GET "http://127.0.0.1:8000/api/v1/analytics/health-history"
+  ```
+
 ## Health Check
 
 Verify the service is running:

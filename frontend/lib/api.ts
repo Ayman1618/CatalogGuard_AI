@@ -1,7 +1,9 @@
 import {
   AISuggestion,
+  AnalyticsSummary,
   CatalogUpload,
   CatalogValidationResponse,
+  HealthHistoryResponse,
   ReviewDecisionResponse,
   ReviewDetails,
   ReviewItem,
@@ -207,6 +209,24 @@ export async function getAISuggestion(
       method: "POST",
     }
   );
+}
+
+/**
+ * Retrieve analytics summary metrics
+ */
+export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
+  return request<AnalyticsSummary>("/api/v1/analytics/summary", {
+    method: "GET",
+  });
+}
+
+/**
+ * Retrieve health score history across validation runs
+ */
+export async function getHealthHistory(): Promise<HealthHistoryResponse> {
+  return request<HealthHistoryResponse>("/api/v1/analytics/health-history", {
+    method: "GET",
+  });
 }
 
 /**
