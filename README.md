@@ -13,6 +13,8 @@ CatalogGuard is a product catalog quality and validation platform built for mult
 - 📊 **Operations Dashboard**: Real-time KPI metrics, catalog health scores, and recent ingestion history.
 - 👨‍💼 **Review Queue**: Human-in-the-loop inspection and decision triage for products requiring manual operations review.
 - ✔️ **Approve / Reject Workflow**: Independent human operational decision-making with instant status synchronization.
+- 🤖 **AI-Assisted Suggestions**: Contextual plain-language explanations and recommended operational actions powered by Google Gemini.
+- 📈 **Catalog Analytics & Trends**: Historical health score tracking and quality breakdown across uploads.
 
 ---
 
@@ -29,6 +31,7 @@ CatalogGuard is a product catalog quality and validation platform built for mult
 - SQLAlchemy 2.0 ORM & Alembic
 - PostgreSQL
 - Pandas & openpyxl
+- Google Gemini API (optional AI assistance)
 
 ---
 
@@ -38,10 +41,10 @@ CatalogGuard is a product catalog quality and validation platform built for mult
 CatalogGuard_AI/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/          # Endpoints (catalogs, reviews)
+│   │   ├── api/v1/          # Endpoints (catalogs, reviews, analytics)
 │   │   ├── core/            # Database configuration
 │   │   ├── models/          # SQLAlchemy ORM models
-│   │   └── services/        # Parsers, validation engine, review service
+│   │   └── services/        # Parsers, validation engine, review, AI, analytics
 │   ├── alembic/             # Schema migrations
 │   └── tests/               # Pytest suite
 │
@@ -101,6 +104,14 @@ npm run dev
 ```
 
 The frontend application will be accessible at `http://localhost:3000`.
+
+### 3. Running Tests
+
+```bash
+# Run backend tests
+cd backend
+pytest
+```
 
 ---
 

@@ -165,3 +165,39 @@ def test_get_catalog_upload_history(client):
     assert history[0]["filename"] == "history.csv"
     assert history[0]["total_products"] == 1
     assert history[0]["status"] == "processed"
+
+
+def test_root_endpoint(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == "CatalogGuard API"
+    assert data["version"] == "0.1.0"
+    assert data["docs_url"] == "/docs"
+    assert data["health_url"] == "/health"
+
+
+def test_successful_csv_upload_with_utf8_bom(client, db_session):
+    # UTF-8 with BOM prefix
+    csv_content = (
+        "\ufeffsku,name,description,category,brand,price,currency,inventory,image_url\n"
+        "BOM001,BOM Laptop,High performance laptop,Electronics,TechBrand,1299.99,USD,10,http://example.com/bom.jpg\n"
+    )
+    files = {
+        "file": (
+            "products_bom.csv",
+            io.BytesIO(csv_content.encode("utf-8-sig")),
+            "text/csv",
+        )
+    }
+
+    response = client.post("/api/v1/catalogs/upload", files=files)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "Catalog uploaded successfully"
+    assert data["total_products"] == 1
+
+    product = db_session.query(Product).filter_by(sku="BOM001").first()
+    assert product is not None
+    assert product.name == "BOM Laptop"
+

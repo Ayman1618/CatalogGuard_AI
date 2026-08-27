@@ -60,6 +60,14 @@ Start the FastAPI development server from the `backend` directory:
 uvicorn app.main:app --reload
 ```
 
+## Running Tests
+
+Execute the automated test suite:
+
+```bash
+pytest
+```
+
 ## Catalog Upload & Ingestion
 
 CatalogGuard supports ingesting product catalogs from CSV and Excel spreadsheets.
