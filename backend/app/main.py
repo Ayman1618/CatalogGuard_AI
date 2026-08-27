@@ -28,6 +28,21 @@ app.include_router(reviews_router, prefix="/api/v1/reviews", tags=["Reviews"])
 app.include_router(analytics_router, prefix="/api/v1/analytics", tags=["Analytics"])
 
 
-@app.get("/health")
+@app.get("/", summary="Root API Information", tags=["General"])
+def root():
+    """
+    Root endpoint returning service metadata and interactive documentation links.
+    """
+    return {
+        "name": "CatalogGuard API",
+        "version": "0.1.0",
+        "description": "AI-assisted product catalog validation platform for multi-vendor marketplaces",
+        "docs_url": "/docs",
+        "health_url": "/health",
+    }
+
+
+@app.get("/health", summary="Health Check", tags=["General"])
 def health_check():
     return {"status": "ok"}
+

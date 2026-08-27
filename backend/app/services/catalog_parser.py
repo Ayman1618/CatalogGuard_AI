@@ -35,7 +35,12 @@ def parse_catalog_file(
     if ext == ".csv":
         file_type = "csv"
         try:
-            df = pd.read_csv(io.BytesIO(file_contents))
+            df = pd.read_csv(io.BytesIO(file_contents), encoding="utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                df = pd.read_csv(io.BytesIO(file_contents), encoding="latin1")
+            except Exception as e:
+                raise CatalogParseError(f"Failed to parse CSV file: {str(e)}")
         except Exception as e:
             raise CatalogParseError(f"Failed to parse CSV file: {str(e)}")
     elif ext in [".xlsx", ".xls"]:
