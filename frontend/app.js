@@ -21,6 +21,7 @@ dropZone.addEventListener('drop', (event) => setFile(event.dataTransfer.files[0]
 document.querySelector('#clear-file').addEventListener('click', clearFile);
 submitButton.addEventListener('click', uploadFile);
 document.querySelector('#refresh-history').addEventListener('click', loadHistory);
+document.querySelector('#export-history').addEventListener('click', exportHistory);
 document.querySelector('#refresh-service').addEventListener('click', checkService);
 historySearch.addEventListener('input', renderHistory);
 
@@ -79,6 +80,21 @@ function renderHistory() {
   document.querySelector('#nav-count').textContent = uploadHistory.length;
   lucide.createIcons();
 }
+function exportHistory() {
+  const query = historySearch.value.trim().toLowerCase();
+  const uploads = uploadHistory.filter((upload) => [upload.filename, upload.file_type, upload.status].some((value) => String(value || '').toLowerCase().includes(query)));
+  if (!uploads.length) return showMessage('There are no uploads to export.', true);
+  const headers = ['Catalog', 'Format', 'Products', 'Status', 'Uploaded'];
+  const rows = uploads.map((upload) => [upload.filename, upload.file_type, upload.total_products, upload.status, upload.created_at ? new Date(upload.created_at).toISOString() : '']);
+  const csv = [headers, ...rows].map((row) => row.map(csvValue).join(',')).join('\n');
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  link.download = `catalogguard-uploads-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showMessage(`${uploads.length} upload${uploads.length === 1 ? '' : 's'} exported.`);
+}
+function csvValue(value) { return `"${String(value ?? '').replace(/"/g, '""')}"`; }
 function emptyHistory() { return '<tr><td colspan="5" class="empty-state"><i data-lucide="inbox"></i><strong>No catalogs yet</strong><span>Your processed uploads will appear here.</span></td></tr>'; }
 function emptySearchHistory() { return '<tr><td colspan="5" class="empty-state"><i data-lucide="search-x"></i><strong>No matching uploads</strong><span>Try a different filename, format, or status.</span></td></tr>'; }
 function formatDate(value) { if (!value) return '—'; return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value)); }
