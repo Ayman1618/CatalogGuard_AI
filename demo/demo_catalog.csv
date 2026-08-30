@@ -1,0 +1,11 @@
+sku,name,description,category,brand,price,currency,inventory,image_url
+SKU-TECH-001,Wireless Ergonomic Keyboard,Full-size ergonomic keyboard with soft wrist rest,Electronics,Logitech,4999.00,INR,45,https://images.unsplash.com/photo-1587829741301-dc798b83add3
+SKU-TECH-002,Bluetooth Noise-Cancelling Headphones,Over-ear wireless headphones with ANC,Electronics,Sony,14990.00,INR,20,https://images.unsplash.com/photo-1505740420928-5e560c06d30e
+SKU-TECH-003,USB-C Fast Charging Cable 2m,Durable braided nylon USB-C fast charging cable,Electronics,,0.00,INR,150,
+SKU-TECH-004,Ergonomic Gaming Mouse,RGB precision optical gaming mouse,Electronics,Razer,-500.00,INR,12,https://images.unsplash.com/photo-1527864550417-7fd91fc51a46
+SKU-HOME-005,Ceramic Coffee Mug 350ml,Matte black ceramic breakfast mug,Home & Kitchen,ClayCraft,399.00,INR,-5,https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd
+SKU-HOME-006,Stainless Steel Water Bottle 1L,Double walled vacuum insulated thermos bottle,Home & Kitchen,,899.00,INR,60,
+SKU-FASH-007,Cotton Casual T-Shirt Navy,100% combed cotton breathable summer crewneck,Apparel,Roadster,599.00,JPY,30,https://images.unsplash.com/photo-1521572267360-ee0c2909d518
+SKU-FASH-008,Slim Fit Denim Jeans 32,Stretchable dark blue slim fit denim jeans,Apparel,Levi's,2499.00,INR,15,https://images.unsplash.com/photo-1542272604-780c96856592
+SKU-TECH-009,Bluetooth Noise-Cancelling Headphones,Duplicate product name with different SKU,Electronics,Bose,18990.00,INR,8,https://images.unsplash.com/photo-1505740420928-5e560c06d30e
+SKU-TECH-010,Mechanical RGB Keyboard,Compact tenkeyless mechanical keyboard,Electronics,Keychron,7499.00,INR,25,https://images.unsplash.com/photo-1587829741301-dc798b83add3
