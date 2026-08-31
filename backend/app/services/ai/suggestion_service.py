@@ -1,6 +1,11 @@
 import os
 from typing import Any, Dict, Literal
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 from pydantic import BaseModel, Field
+
+load_dotenv()
 
 
 class AISuggestion(BaseModel):
@@ -24,6 +29,9 @@ class AIServiceUnavailableError(Exception):
 def generate_validation_suggestion(
     product_data: Dict[str, Any], validation_issue: Dict[str, Any]
 ) -> AISuggestion:
+    """
+    Generates a structured AI validation suggestion for a given product issue using Google Gemini.
+    """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key.strip() in ("", "your_gemini_api_key"):
         raise AIServiceUnavailableError("AI suggestion service is currently unavailable.")
@@ -67,9 +75,6 @@ Deterministic Validation Issue:
 """
 
     try:
-        from google import genai
-        from google.genai import types
-
         client = genai.Client(api_key=api_key)
         config = types.GenerateContentConfig(
             response_mime_type="application/json",
@@ -78,9 +83,12 @@ Deterministic Validation Issue:
         )
 
         response = None
-        # Try requested gemini-2.5-flash-lite, with automatic fallback to gemini-3.5-flash-lite / gemini-flash-lite-latest
-        models_to_try = ["gemini-2.5-flash-lite", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"]
-        last_err = None
+        models_to_try = [
+            "gemini-2.5-flash-lite",
+            "gemini-3.5-flash-lite",
+            "gemini-flash-lite-latest",
+        ]
+        last_err: Exception | None = None
 
         for model_name in models_to_try:
             try:
@@ -98,10 +106,14 @@ Deterministic Validation Issue:
         if not response or not response.text:
             if last_err:
                 raise last_err
-            raise AIServiceUnavailableError("AI suggestion service returned an empty response.")
+            raise AIServiceUnavailableError(
+                "AI suggestion service returned an empty response."
+            )
 
         return AISuggestion.model_validate_json(response.text)
     except AIServiceUnavailableError:
         raise
     except Exception as e:
-        raise AIServiceUnavailableError("AI suggestion service is currently unavailable.") from e
+        raise AIServiceUnavailableError(
+            "AI suggestion service is currently unavailable."
+        ) from e
