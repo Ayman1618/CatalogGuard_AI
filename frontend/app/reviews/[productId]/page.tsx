@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   getReviewDetails,
   approveProduct,
@@ -21,13 +22,9 @@ import {
   Check,
 } from "lucide-react";
 
-interface PageProps {
-  params: Promise<{ productId: string }>;
-}
-
-export default function ProductReviewDetailPage({ params }: PageProps) {
-  const resolvedParams = use(params);
-  const productId = Number(resolvedParams.productId);
+export default function ProductReviewDetailPage() {
+  const params = useParams();
+  const productId = params?.productId ? Number(params.productId) : NaN;
 
   const [details, setDetails] = useState<ReviewDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
