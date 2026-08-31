@@ -71,16 +71,33 @@ Deterministic Validation Issue:
         from google.genai import types
 
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=AISuggestion,
-                temperature=0.2,
-            ),
+        config = types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=AISuggestion,
+            temperature=0.2,
         )
+
+        response = None
+        # Try requested gemini-2.5-flash-lite, with automatic fallback to gemini-3.5-flash-lite / gemini-flash-lite-latest
+        models_to_try = ["gemini-2.5-flash-lite", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"]
+        last_err = None
+
+        for model_name in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=config,
+                )
+                if response and response.text:
+                    break
+            except Exception as e:
+                last_err = e
+                continue
+
         if not response or not response.text:
+            if last_err:
+                raise last_err
             raise AIServiceUnavailableError("AI suggestion service returned an empty response.")
 
         return AISuggestion.model_validate_json(response.text)
