@@ -117,57 +117,60 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "flex flex-col items-center justify-center p-8 md:p-12 border-2 border-dashed rounded-xl cursor-pointer transition-colors text-center",
+            "flex flex-col items-center justify-center p-6 sm:p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors text-center",
             isDragging
-              ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20"
-              : "border-slate-300 hover:border-indigo-400 bg-slate-50/50 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/40"
+              ? "border-blue-500 bg-blue-50/40"
+              : "border-slate-300 hover:border-blue-400 bg-slate-50/50 hover:bg-slate-50"
           )}
         >
-          <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 mb-3 dark:bg-indigo-950/50 dark:text-indigo-400">
-            <UploadCloud className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-md bg-blue-50 border border-blue-200/60 flex items-center justify-center text-blue-600 mb-2.5 shadow-xs">
+            <UploadCloud className="w-5 h-5 stroke-[2.2]" />
           </div>
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-            Click to upload or drag & drop catalog file
+          <p className="text-xs font-semibold text-slate-900">
+            Click to select or drag catalog file here
           </p>
-          <p className="text-xs text-slate-500 mt-1 dark:text-slate-400">
-            Supports CSV (.csv) and Excel (.xlsx) with columns: sku, name, category, price, inventory
+          <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
+            Accepts CSV (.csv) or Excel (.xlsx) containing seller product rows
           </p>
-          <span className="mt-4 inline-flex items-center text-xs font-medium text-indigo-600 dark:text-indigo-400">
-            Browse files from computer →
-          </span>
+          <div className="mt-3 flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+            <span className="px-1.5 py-0.5 rounded bg-white border border-slate-200 uppercase font-semibold">.CSV</span>
+            <span className="px-1.5 py-0.5 rounded bg-white border border-slate-200 uppercase font-semibold">.XLSX</span>
+            <span className="text-slate-400">· Max 20MB</span>
+          </div>
         </div>
       ) : (
-        <div className="p-5 border border-slate-200 rounded-xl bg-white space-y-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="p-4 border border-slate-200 rounded-lg bg-white space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
-                <FileSpreadsheet className="w-5 h-5" />
+              <div className="p-2 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
+                <FileSpreadsheet className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+                <p className="font-semibold text-xs text-slate-950">
                   {file.name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {formatFileSize(file.size)} • {file.name.split(".").pop()?.toUpperCase()} file
+                <p className="text-[11px] text-slate-500 font-mono">
+                  {formatFileSize(file.size)} · {file.name.split(".").pop()?.toUpperCase()} format
                 </p>
               </div>
             </div>
             <button
               onClick={handleClear}
               disabled={isUploading}
-              className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md transition-colors"
+              className="p-1 text-slate-400 hover:text-slate-600 rounded transition-colors"
               aria-label="Remove selected file"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
             <Button
               variant="outline"
               size="sm"
               onClick={handleClear}
               disabled={isUploading}
+              className="h-8 text-xs"
             >
               Cancel
             </Button>
@@ -175,9 +178,10 @@ export function UploadDropzone({ onUploadSuccess }: UploadDropzoneProps) {
               size="sm"
               onClick={handleUpload}
               isLoading={isUploading}
+              className="h-8 text-xs"
             >
-              <UploadCloud className="w-4 h-4 mr-1.5" />
-              Process & Ingest Catalog
+              <UploadCloud className="w-3.5 h-3.5 mr-1" />
+              Ingest & Process Catalog
             </Button>
           </div>
         </div>

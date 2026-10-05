@@ -9,9 +9,8 @@ import {
   FolderUp,
   ListFilter,
   ShieldCheck,
-  Settings,
-  Circle,
   X,
+  FileText,
 } from "lucide-react";
 import { getHealth } from "@/lib/api";
 
@@ -52,18 +51,21 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       href: "/",
       icon: LayoutDashboard,
       active: pathname === "/",
+      badge: null,
     },
     {
-      title: "Uploads",
+      title: "Catalog Ingestion",
       href: "/uploads",
       icon: FolderUp,
       active: pathname.startsWith("/uploads"),
+      badge: null,
     },
     {
       title: "Review Queue",
       href: "/reviews",
       icon: ListFilter,
       active: pathname.startsWith("/reviews"),
+      badge: "LIVE",
     },
   ];
 
@@ -72,7 +74,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs md:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -80,22 +82,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out md:translate-x-0 dark:border-slate-800 dark:bg-slate-950",
+          "fixed top-0 bottom-0 left-0 z-50 flex w-60 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Brand Header */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex h-14 items-center justify-between px-5 border-b border-slate-200 bg-slate-50/50">
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-bold text-slate-900 tracking-tight dark:text-white"
+            className="flex items-center gap-2.5 font-semibold text-slate-900 tracking-tight"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-xs">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-white shadow-xs">
+              <ShieldCheck className="h-4 w-4 stroke-[2.2]" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-bold leading-none">CatalogGuard</span>
-              <span className="text-[10px] text-slate-500 font-normal mt-0.5">Operations Hub</span>
+              <span className="text-sm font-bold tracking-tight text-slate-950">CatalogGuard</span>
+              <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400">Operations</span>
             </div>
           </Link>
           {onClose && (
@@ -104,88 +106,100 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               className="p-1 rounded-md text-slate-400 hover:text-slate-600 md:hidden"
               aria-label="Close sidebar"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-3 mb-2">
-            Operations
-          </div>
-          <nav className="space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    item.active
-                      ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "h-4 w-4 shrink-0",
-                      item.active
-                        ? "text-indigo-600 dark:text-indigo-400"
-                        : "text-slate-400"
-                    )}
-                  />
-                  <span>{item.title}</span>
-                </Link>
-              );
-            })}
-
-            {/* Settings Placeholder */}
-            <div
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 cursor-not-allowed opacity-60"
-              title="Settings (Read only / placeholder)"
-            >
-              <Settings className="h-4 w-4 shrink-0 text-slate-400" />
-              <span>Settings</span>
-              <span className="ml-auto text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-mono">
-                SOON
-              </span>
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+          <div>
+            <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 px-2.5 mb-1.5">
+              Workflows
             </div>
-          </nav>
+            <nav className="space-y-0.5">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      "group flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+                      item.active
+                        ? "bg-blue-50 text-blue-700 font-semibold border-l-2 border-blue-600 rounded-l-none"
+                        : "text-slate-600 hover:bg-slate-100/70 hover:text-slate-900"
+                    )}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon
+                        className={cn(
+                          "h-4 w-4 shrink-0 transition-colors",
+                          item.active
+                            ? "text-blue-600"
+                            : "text-slate-400 group-hover:text-slate-600"
+                        )}
+                      />
+                      <span>{item.title}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 px-2.5 mb-1.5">
+              Operational Specs
+            </div>
+            <div className="space-y-0.5">
+              <Link
+                href="/uploads"
+                className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs text-slate-500 hover:bg-slate-100/70 hover:text-slate-900 transition-colors"
+              >
+                <FileText className="h-4 w-4 text-slate-400" />
+                <span>Ingestion Schema</span>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Footer / Status */}
-        <div className="border-t border-slate-200/80 p-4 space-y-3 dark:border-slate-800">
-          <div className="flex items-center justify-between rounded-lg bg-slate-50 p-2.5 text-xs text-slate-600 border border-slate-200/60 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400">
+        <div className="border-t border-slate-200 p-3 space-y-2 bg-slate-50/40">
+          <div className="flex items-center justify-between rounded-md bg-white px-2.5 py-1.5 text-xs text-slate-600 border border-slate-200">
             <div className="flex items-center gap-2">
-              <Circle
+              <span
                 className={cn(
-                  "h-2.5 w-2.5 fill-current",
+                  "h-2 w-2 rounded-full",
                   apiStatus === "online"
-                    ? "text-emerald-500"
+                    ? "bg-emerald-500 ring-2 ring-emerald-100"
                     : apiStatus === "offline"
-                    ? "text-rose-500"
-                    : "text-amber-500"
+                    ? "bg-red-500 ring-2 ring-red-100"
+                    : "bg-amber-500 ring-2 ring-amber-100"
                 )}
               />
-              <span>API Backend</span>
+              <span className="text-[11px] font-medium text-slate-700">Service API</span>
             </div>
-            <span className="font-mono text-[11px] font-medium capitalize">
+            <span className="font-mono text-[10px] uppercase font-semibold text-slate-500">
               {apiStatus}
             </span>
           </div>
 
-          <div className="flex items-center gap-3 px-1">
-            <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs border border-indigo-200">
+          <div className="flex items-center gap-2.5 px-2 py-1">
+            <div className="h-7 w-7 rounded-md bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-[11px] border border-slate-200">
               OP
             </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                Operations Lead
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-semibold text-slate-900 truncate">
+                Operations Console
               </span>
-              <span className="text-[11px] text-slate-500">catalog@guard.internal</span>
+              <span className="text-[10px] text-slate-400 truncate">catalog.internal</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { ReviewStatus, ValidationSeverity, ValidationStatus } from "@/types/catalog";
-import { CheckCircle2, AlertTriangle, XCircle, Clock, Check, Ban } from "lucide-react";
+import { Check, AlertTriangle, AlertCircle, Clock, X } from "lucide-react";
 
 interface ValidationBadgeProps {
   status: ValidationStatus;
@@ -20,12 +20,12 @@ export function ValidationBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800",
+          "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-emerald-50 text-emerald-800 border border-emerald-200/90",
           className
         )}
       >
-        {showIcon && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />}
-        Valid
+        {showIcon && <Check className="w-3 h-3 text-emerald-700 shrink-0 stroke-[2.5]" />}
+        <span>Valid</span>
       </span>
     );
   }
@@ -34,12 +34,12 @@ export function ValidationBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800",
+          "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-amber-50 text-amber-800 border border-amber-200/90",
           className
         )}
       >
-        {showIcon && <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />}
-        Warning
+        {showIcon && <AlertTriangle className="w-3 h-3 text-amber-700 shrink-0 stroke-[2.5]" />}
+        <span>Warning</span>
       </span>
     );
   }
@@ -47,12 +47,12 @@ export function ValidationBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800",
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-red-50 text-red-800 border border-red-200/90",
         className
       )}
     >
-      {showIcon && <XCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />}
-      Invalid
+      {showIcon && <AlertCircle className="w-3 h-3 text-red-700 shrink-0 stroke-[2.5]" />}
+      <span>Invalid</span>
     </span>
   );
 }
@@ -74,12 +74,12 @@ export function ReviewBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800",
+          "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-emerald-50 text-emerald-800 border border-emerald-200/90",
           className
         )}
       >
-        {showIcon && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />}
-        Approved
+        {showIcon && <Check className="w-3 h-3 text-emerald-700 shrink-0 stroke-[2.5]" />}
+        <span>Approved</span>
       </span>
     );
   }
@@ -88,12 +88,12 @@ export function ReviewBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800",
+          "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-red-50 text-red-800 border border-red-200/90",
           className
         )}
       >
-        {showIcon && <Ban className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />}
-        Rejected
+        {showIcon && <X className="w-3 h-3 text-red-700 shrink-0 stroke-[2.5]" />}
+        <span>Rejected</span>
       </span>
     );
   }
@@ -101,12 +101,12 @@ export function ReviewBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium tracking-tight bg-slate-100 text-slate-700 border border-slate-200",
         className
       )}
     >
-      {showIcon && <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />}
-      Pending
+      {showIcon && <Clock className="w-3 h-3 text-slate-500 shrink-0" />}
+      <span>Pending</span>
     </span>
   );
 }
@@ -123,10 +123,10 @@ export function SeverityBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider",
+        "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider",
         isError
-          ? "bg-rose-100 text-rose-800 border border-rose-200"
-          : "bg-amber-100 text-amber-800 border border-amber-200",
+          ? "bg-red-50 text-red-700 border border-red-200"
+          : "bg-amber-50 text-amber-700 border border-amber-200",
         className
       )}
     >
@@ -145,15 +145,15 @@ export function ConfidenceBadge({
   const norm = (confidence || "").toLowerCase();
   const colorClass =
     norm === "high"
-      ? "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+      ? "bg-emerald-50 text-emerald-800 border-emerald-200"
       : norm === "medium"
-      ? "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
-      : "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
+      ? "bg-amber-50 text-amber-800 border-amber-200"
+      : "bg-slate-100 text-slate-700 border-slate-200";
 
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase border tracking-wider",
+        "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium border uppercase tracking-wider",
         colorClass,
         className
       )}

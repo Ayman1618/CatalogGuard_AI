@@ -43,10 +43,10 @@ export function TableSkeleton({
 
 export function CardSkeleton() {
   return (
-    <div className="p-6 rounded-xl border border-slate-200 bg-white space-y-3 shadow-xs">
-      <Skeleton className="h-4 w-1/3" />
-      <Skeleton className="h-8 w-1/2" />
-      <Skeleton className="h-3 w-2/3" />
+    <div className="p-4 rounded-lg border border-slate-200 bg-white space-y-3 shadow-xs">
+      <Skeleton className="h-3 w-1/3" />
+      <Skeleton className="h-6 w-1/2" />
+      <Skeleton className="h-2.5 w-2/3" />
     </div>
   );
 }

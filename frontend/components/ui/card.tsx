@@ -9,7 +9,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200/80 bg-white text-slate-900 shadow-xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100",
+        "rounded-lg border border-slate-200 bg-white text-slate-900 shadow-xs",
         className
       )}
       {...props}
@@ -26,7 +26,7 @@ export function CardHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      className={cn("flex flex-col space-y-1 p-4 sm:p-5", className)}
       {...props}
     >
       {children}
@@ -42,7 +42,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "font-semibold leading-none tracking-tight text-slate-900 dark:text-slate-100",
+        "text-sm font-semibold leading-none tracking-tight text-slate-900",
         className
       )}
       {...props}
@@ -59,7 +59,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-xs text-slate-500 dark:text-slate-400", className)}
+      className={cn("text-xs text-slate-500", className)}
       {...props}
     >
       {children}
@@ -73,7 +73,7 @@ export function CardContent({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("p-6 pt-0", className)} {...props}>
+    <div className={cn("p-4 sm:p-5 pt-0", className)} {...props}>
       {children}
     </div>
   );
@@ -86,7 +86,10 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center p-6 pt-0 border-t border-slate-100 dark:border-slate-800 mt-4", className)}
+      className={cn(
+        "flex items-center p-4 sm:p-5 pt-3 border-t border-slate-100 bg-slate-50/50 rounded-b-lg",
+        className
+      )}
       {...props}
     >
       {children}
