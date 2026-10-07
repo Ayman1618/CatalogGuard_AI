@@ -18,6 +18,7 @@ import {
 } from "@/types/catalog";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { RecentCatalogsTable } from "@/components/dashboard/recent-catalogs-table";
+import { TryYourOwnDataModal } from "@/components/dashboard/try-data-modal";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardSkeleton, TableSkeleton } from "@/components/ui/skeleton";
@@ -36,6 +37,7 @@ import {
   TrendingUp,
   AlertCircle,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 
 const ISSUE_CODE_LABELS: Record<string, string> = {
@@ -62,6 +64,7 @@ export default function DashboardPage() {
     type: "success" | "error" | "info";
     message: string;
   } | null>(null);
+  const [isTryDataModalOpen, setIsTryDataModalOpen] = useState(false);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -211,6 +214,38 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Try Your Own Data CTA Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:px-4 sm:py-3 rounded-lg border border-slate-200 bg-white shadow-xs">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-600 shrink-0 mt-0.5 sm:mt-0">
+            <FileSpreadsheet className="w-4 h-4 text-slate-600" />
+          </div>
+          <div>
+            <h3 className="text-xs sm:text-sm font-semibold tracking-tight text-slate-900">
+              Want to test your own catalog?
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5 sm:mt-0">
+              Generate a realistic CSV with ChatGPT and run it through CatalogGuard.
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setIsTryDataModalOpen(true)}
+          className="h-8 text-xs font-medium shrink-0 border-slate-200 hover:bg-slate-50 text-slate-800"
+        >
+          <Sparkles className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+          Try Your Own Data
+        </Button>
+      </div>
+
+      {/* Try Your Own Data Modal */}
+      <TryYourOwnDataModal
+        isOpen={isTryDataModalOpen}
+        onClose={() => setIsTryDataModalOpen(false)}
+      />
 
       {/* Analytics Error Notification */}
       {analyticsError && (
