@@ -52,6 +52,48 @@ Key environment variables:
    alembic upgrade head
    ```
 
+5. Seed Demo Catalog Data (Optional for local, required for fresh production):
+   ```bash
+   python scripts/seed_demo.py
+   ```
+   *Note: This script is fully idempotent. If the demo catalog has already been seeded, it safely exits without duplicating records.*
+
+## Seeding Demo Data
+
+CatalogGuard includes an idempotent CLI seed script (`scripts/seed_demo.py`) that populates the PostgreSQL database with the standard demo catalog (`demo/demo_catalog.csv`). It ingests real product records, runs the deterministic validation engine, creates validation run records, and populates operations dashboard metrics and the review queue.
+
+### Local Execution
+```bash
+cd backend
+python scripts/seed_demo.py
+```
+
+### Production Deployment Execution (One-Time Seed)
+To initialize the deployed PostgreSQL database with demo data:
+
+1. Obtain your production database connection string (`DATABASE_URL`) from your hosting provider (e.g., Vercel Postgres, Supabase, Neon, Railway, Render).
+2. Execute the seed script with the production connection string:
+
+```bash
+cd backend
+DATABASE_URL="postgresql+psycopg://<USER>:<PASSWORD>@<HOST>:<PORT>/<DATABASE>?sslmode=require" python scripts/seed_demo.py
+```
+
+Alternatively, pass the database URL via the CLI parameter:
+```bash
+cd backend
+python scripts/seed_demo.py --database-url "postgresql+psycopg://<USER>:<PASSWORD>@<HOST>:<PORT>/<DATABASE>?sslmode=require"
+```
+
+> **Security Note:** Never commit production database URLs or credentials into source control, configuration files, or pull requests. Use environment variables or deployment CLI tools.
+
+### Idempotency Guarantee
+The script checks for the existence of `demo_catalog.csv` and matching product records before ingesting. If the demo catalog has already been seeded, it displays:
+```
+Demo catalog already exists. Nothing to seed.
+```
+and exits cleanly (exit code `0`) without modifying or duplicating any records.
+
 ## Running the Server
 
 Start the FastAPI development server from the `backend` directory:
