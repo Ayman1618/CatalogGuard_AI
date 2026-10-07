@@ -12,20 +12,73 @@ catalogs or products.
 """
 
 import argparse
+import importlib
 import os
 import sys
 from pathlib import Path
 
+# Ensure backend directory is in sys.path immediately before any app imports
+backend_dir = Path(__file__).resolve().parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
 
-def setup_environment(target_db_url: str | None = None) -> None:
-    """Ensure backend package is in sys.path and DATABASE_URL is configured."""
-    # Add backend directory to sys.path
-    backend_dir = Path(__file__).resolve().parent.parent
-    if str(backend_dir) not in sys.path:
-        sys.path.insert(0, str(backend_dir))
 
-    if target_db_url:
-        os.environ["DATABASE_URL"] = target_db_url
+def normalize_cli_database_url(url: str | None) -> str | None:
+    """
+    Clean and normalize a database URL provided via CLI or argument.
+    Handles surrounding quotes, whitespace, and driver schemes.
+    """
+    if not url:
+        return None
+
+    cleaned = url.strip()
+
+    # Strip optional 'DATABASE_URL=' prefix if copied directly from key=value format
+    if cleaned.startswith("DATABASE_URL="):
+        cleaned = cleaned[len("DATABASE_URL=") :].strip()
+
+    # Strip surrounding single or double quotes
+    while (cleaned.startswith('"') and cleaned.endswith('"')) or (
+        cleaned.startswith("'") and cleaned.endswith("'")
+    ):
+        cleaned = cleaned[1:-1].strip()
+
+    # Check for Vercel redacted placeholder
+    if cleaned.lower() == "[sensitive]":
+        raise ValueError(
+            "DATABASE_URL is set to '[SENSITIVE]'. This occurs when 'vercel env pull' "
+            "exports redacted secrets without decryption. Please provide the actual "
+            "database connection string via --database-url '<URL>'."
+        )
+
+    # Scheme normalization for psycopg 3
+    if cleaned.startswith("postgres://"):
+        cleaned = "postgresql+psycopg://" + cleaned[len("postgres://") :]
+    elif cleaned.startswith("postgresql://") and not cleaned.startswith("postgresql+"):
+        cleaned = "postgresql+psycopg://" + cleaned[len("postgresql://") :]
+    elif cleaned.startswith("postgresql+psycopg2://"):
+        cleaned = "postgresql+psycopg://" + cleaned[len("postgresql+psycopg2://") :]
+
+    return cleaned
+
+
+def setup_database_connection(target_db_url: str | None = None):
+    """
+    Applies the target database URL before loading app.core.database,
+    or reloads the module if it was already imported, returning (Base, SessionLocal, engine).
+    """
+    normalized_url = normalize_cli_database_url(target_db_url)
+    if normalized_url:
+        os.environ["DATABASE_URL"] = normalized_url
+
+    if "app.core.database" in sys.modules:
+        import app.core.database
+
+        importlib.reload(app.core.database)
+
+    from app.core.database import Base, SessionLocal, engine
+
+    return Base, SessionLocal, engine
 
 
 def find_demo_csv() -> Path:
@@ -50,7 +103,7 @@ def find_demo_csv() -> Path:
     )
 
 
-def seed_demo_catalog() -> int:
+def seed_demo_catalog(database_url: str | None = None) -> int:
     """
     Main seeding routine:
     1. Connect to PostgreSQL using existing SessionLocal / engine.
@@ -60,8 +113,12 @@ def seed_demo_catalog() -> int:
     5. Run deterministic validation engine to create ValidationRun.
     6. Commit safely with rollback on error.
     """
-    # Imports must occur after setup_environment configures sys.path and env
-    from app.core.database import Base, SessionLocal, engine
+    try:
+        Base, SessionLocal, engine = setup_database_connection(database_url)
+    except ValueError as e:
+        print(f"Configuration error: {e}", file=sys.stderr)
+        return 1
+
     from app.models.catalog_upload import CatalogUpload
     from app.models.product import Product
     from app.models.validation_run import ValidationRun
@@ -155,7 +212,9 @@ def seed_demo_catalog() -> int:
         db.flush()
 
         # 5. Execute existing deterministic validation engine
-        print(f"Executing deterministic validation engine on upload ID {catalog_upload.id}...")
+        print(
+            f"Executing deterministic validation engine on upload ID {catalog_upload.id}..."
+        )
         val_response = validate_catalog_by_upload_id(db, catalog_upload.id)
 
         # validate_catalog_by_upload_id commits the validation run.
@@ -201,8 +260,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    setup_environment(args.database_url)
-    exit_code = seed_demo_catalog()
+    exit_code = seed_demo_catalog(database_url=args.database_url)
     sys.exit(exit_code)
 
 
